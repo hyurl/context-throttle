@@ -20,10 +20,10 @@ export interface ThrottleOptions<I> {
      */
     duration?: number;
     /**
-     * Uses a property from the context object to populate hash id for storing 
-     * throttle records.
+     * Uses a property (or several properties) from the context object to 
+     * populate hash id for storing throttle records.
      */
-    useKey?: keyof I;
+    useKey?: keyof I | Array<keyof I>;
     /**
      * The throttle rule will not be applied to the matching condition, returns 
      * `true` or `false` to indicate skipping or testing.

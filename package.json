@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "description": "Context based throttle control.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "test": "node test"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyurl/context-throttle.git"
   },
   "keywords": [
+    "throttle",
     "express",
-    "session",
-    "throttle"
+    "koa"
   ],
   "author": "Ayon Lee <i@hyurl.com>",
   "license": "MIT",
@@ -22,6 +23,8 @@
   },
   "homepage": "https://github.com/hyurl/context-throttle#readme",
   "devDependencies": {
+    "axios": "^0.18.0",
+    "co": "^4.6.0",
     "koa": "^2.6.2",
     "mocha": "^5.2.0"
   },

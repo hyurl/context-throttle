@@ -111,8 +111,8 @@ The `ThrottleOptions` interface contains these optional attributes:
 
 - `duration: number` The default duration in seconds to lock between two 
     operations, the default value is `5`.
-- `useKey: string` Uses a property from the context object to populate hash id 
-    for storing throttle records.
+- `useKey: string` Uses a property (or several properties) from the context 
+    object to populate hash id for storing throttle records.
 - `except: (context) => boolean` The throttle rule will not be applied to the 
     matching condition, returns `true` or `false` to indicate skipping or 
     testing.
@@ -134,10 +134,13 @@ A `ThrottleStorage` must implement these methods:
     - `id` A unique hash id populated by throttle function.
     - `cb` After test, this function will be called with potential error and 
         `pass` argument indicates test succeed or failed.
-- `gc(cb: () => void): void` Garbage collection implementation. Since the 
-    throttle function will not care if there is any error during gc, so not 
-    error is passed to the callback function, the gc itself must handle any 
-    potential errors.
+- `gc(cb: () => void): void` Garbage collection implementation. Unlike many 
+    session storage, the gc here is started and recycled by the throttle 
+    function instead by the storage itself, the storage just needs to notify the
+    throttle function once it finishes gc and doesn't care where and when gc 
+    method is being called. Since the throttle function will not care if there 
+    is any error during gc, so no error is passed to the callback function, the 
+    gc itself must handle any potential errors.
 
 In `express()` and `koa()` favors, there is an additional property that could be
 set in options:

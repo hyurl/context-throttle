@@ -7,11 +7,14 @@ const co = require("co");
 const Axios = require("axios").default;
 const sleep = require("./util").sleep;
 const cookies = require("./util").cookies;
-const koa = require("koa");
-const session = require("koa-session");
-const Router = require("koa-router");
 
 describe("throttle for koa application", () => {
+    if (parseInt(process.version.slice(1)) < 8) return;
+
+    const koa = require("koa");
+    const session = require("koa-session");
+    const Router = require("koa-router");
+
     var throttle = createThrottle.koa({
         useKey: ["session.id", "method", "originalUrl"],
         gcInterval: 0,

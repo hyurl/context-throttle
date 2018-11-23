@@ -13,22 +13,28 @@ const sleep = require("./util").sleep;
 describe("throttle for native http application", () => {
     var defaultStorage = new MemoryStore;
     var throttle = createThrottle({
-        duration: 10,
+        duration: 1,
         useKey: ["method", "url"],
         gcInterval: 0,
         except: (ctx) => ctx.method == "PATCH",
         storage: defaultStorage
     });
     var server = http.createServer((req, res) => {
-        if (req.url == "/example") {
-            co(function* () {
-                if (yield throttle(req, 1)) {
+        co(function* () {
+            if (req.url == "/example") {
+                if (yield throttle(req)) {
                     res.end("operation succeed");
                 } else {
                     res.end("too many requests");
                 }
-            });
-        }
+            } else if (req.url == "/example2") {
+                if (yield throttle(req, 2)) {
+                    res.end("operation succeed");
+                } else {
+                    res.end("too many requests");
+                }
+            }
+        });
     });
     var url = "http://localhost:3000/example";
 
@@ -72,12 +78,33 @@ describe("throttle for native http application", () => {
     it("should contain records in the storage as expected", () => {
         assert.deepStrictEqual(Object.keys(defaultStorage.records), [
             hash({ method: "GET", url: "/example" }),
-            hash({ method: "POST", url: "/example" })
+            hash({ method: "POST", url: "/example" }),
         ]);
 
         for (let record of values(defaultStorage.records)) {
             assert.notEqual(new Date(record[1]).toString(), "Invalid Date");
             assert.strictEqual(record[1], 1);
         }
+    });
+
+    it("should perform throttle control with new duration as expected", function (done) {
+        this.timeout(3000);
+        co(function* () {
+            try {
+                let url2 = url + "2",
+                    res1 = (yield Axios.get(url2)).data,
+                    res2 = (yield Axios.get(url2)).data,
+                    res3 = (yield sleep(1).then(() => Axios.get(url2))).data,
+                    res4 = (yield sleep(1).then(() => Axios.get(url2))).data;
+
+                assert.strictEqual(res1, "operation succeed");
+                assert.strictEqual(res2, "too many requests");
+                assert.strictEqual(res3, "too many requests");
+                assert.strictEqual(res4, "operation succeed");
+                done();
+            } catch (err) {
+                done(err);
+            }
+        });
     });
 });

@@ -27,7 +27,8 @@ export interface ThrottleOptions<I> {
     duration?: number;
     /**
      * Uses a property (or several properties) from the context object to 
-     * populate hash id for storing throttle records.
+     * populate hash id for storing throttle records. If not key is provided, 
+     * the hash id will be generated according to the context itself.
      */
     useKey?: keyof I | Array<keyof I>;
     /**

@@ -5,8 +5,26 @@
 ## Example
 
 ```javascript
-const { createServer } = require("http");
 const { createThrottle } = require("context-throttle");
+
+var throttle = createThrottle();
+
+(async () => {
+    if (await throttle("key", 5)) { // throttle by a string
+        // ...
+    } else if (await throttle(1000, 5)) { // throttle by a number
+        // ...
+    } else if (await throttle({/* ... */}, 5)) { // throttle by an object
+        // ...
+    }
+})();
+```
+
+It is very common using throttle mechanism in a web application.
+
+```javascript
+const { createThrottle } = require("context-throttle");
+const { createServer } = require("http");
 
 var throttle = createThrottle({
     useKey: ["method", "url"]
@@ -36,8 +54,7 @@ const session = require("express-session");
 
 var app = express();
 var throttle = createThrottle.express({
-    useKey: ["session.id", "method", "originalUrl"],
-    throw: [429, 'Too Many Requests']
+    useKey: ["session.id", "method", "originalUrl"]
 });
 
 app.use(session(/* ... */));
@@ -57,14 +74,18 @@ const session = require("koa-session");
 var app = new Koa();
 var route = new Router();
 var throttle = createThrottle.koa({
-    useKey: ["session.id", "method", "originalUrl"],
-    throw: [429, 'Too Many Requests']
+    useKey: ["session.id", "method", "originalUrl"]
 });
 
-app.use(session(/* ... */));
+app.keys = ["my app"];
+app.use(session(app)).use((ctx, next) => {
+    // since koa-session doesn't expose a session id by default, you have to 
+    // defind it manually.
+    ctx.session.id = ctx.session.id || Math.random().toString(16).slice(2);
+    next();
+});
 
-route.post("/example", throttle(10));
-route.post("/example", (ctx, next) => {
+route.post("/example", throttle(10), (ctx, next) => {
     // If throttle test fails, this function will never be called.
 });
 
@@ -112,7 +133,8 @@ The `ThrottleOptions` interface contains these optional attributes:
 - `duration: number` The default duration in seconds to lock between two 
     operations, the default value is `5`.
 - `useKey: string | string[]` Uses a property (or several properties) from the 
-    context object to populate hash id for storing throttle records.
+    context object to populate hash id for storing throttle records. If not key
+    is provided, the hash id will be generated according to the context itself.
 - `except: (context) => boolean` The throttle rule will not be applied to the 
     matching condition, returns `true` or `false` to indicate skipping or 
     testing.

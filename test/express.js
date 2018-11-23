@@ -6,6 +6,7 @@ const assert = require("assert");
 const co = require("co");
 const Axios = require("axios").default;
 const sleep = require("./util").sleep;
+const cookies = require("./util").cookies;
 const express = require("express");
 const session = require("express-session");
 
@@ -32,7 +33,7 @@ describe("throttle for express application", () => {
     var url = "http://localhost:3000/example";
     var config;
 
-    app.use(session({ secret: "test" }));
+    app.use(session({ secret: "test", resave: true, saveUninitialized: true }));
     app.get("/example", throttle(1), (req, res) => {
         res.send("operation succeed");
     });
@@ -53,8 +54,7 @@ describe("throttle for express application", () => {
         co(function* () {
             try {
                 let res = yield Axios.get(url),
-                    header = res.headers["set-cookie"][0],
-                    cookie = header.slice(0, header.indexOf(";"));
+                    cookie = cookies(res.headers["set-cookie"]);
 
                 config = { headers: { cookie } };
 
@@ -107,7 +107,7 @@ describe("throttle for express application", () => {
         });
     });
 
-    it("should throw customised message as expected", (done) => {
+    it("should throw customized message as expected", (done) => {
         co(function* () {
             try {
                 let url = "http://localhost:3000/example2",

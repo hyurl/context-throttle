@@ -1,6 +1,6 @@
 {
   "name": "context-throttle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Context based throttle control.",
   "main": "index.js",
   "types": "index.d.ts",

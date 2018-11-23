@@ -1,7 +1,7 @@
 "use strict";
 
 const createThrottle = require("..").default;
-const MemoryStore = require("..").MemoryStore;
+const CommonStore = require("..").CommonStore;
 const http = require("http");
 const assert = require("assert");
 const co = require("co");
@@ -11,7 +11,7 @@ const values = require("lodash/values");
 const sleep = require("./util").sleep;
 
 describe("throttle for native http application", () => {
-    var defaultStorage = new MemoryStore;
+    var defaultStorage = new CommonStore;
     var throttle = createThrottle({
         duration: 1,
         useKey: ["method", "url"],

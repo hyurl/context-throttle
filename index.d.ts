@@ -7,7 +7,7 @@ export interface ThrottleFunction<I> {
 export interface ThrottleStorage {
     /** Sets a throttle record in the storage. */
     set(id: string, duration: number, cb: (err: Error) => void): void;
-    /** Tests if a throttle is available. */
+    /** Tests the throttle via id to see if an operation can be performed. */
     test(id: string, cb: (err: Error, pass: boolean) => void): void;
     /** Garbage collection implementation. */
     gc(cb: () => void): void;
@@ -27,7 +27,7 @@ export interface ThrottleOptions<I> {
     duration?: number;
     /**
      * Uses a property (or several properties) from the context object to 
-     * populate hash id for storing throttle records. If not key is provided, 
+     * produce hash id for storing throttle records. If no key is provided, 
      * the hash id will be generated according to the context itself.
      */
     useKey?: keyof I | Array<keyof I>;

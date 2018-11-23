@@ -2,6 +2,12 @@
 
 **Context based throttle control.**
 
+## Install
+
+```sh
+npm i context-throttle
+```
+
 ## Example
 
 ```javascript
@@ -133,7 +139,7 @@ The `ThrottleOptions` interface contains these optional attributes:
 - `duration: number` The default duration in seconds to lock between two 
     operations, the default value is `5`.
 - `useKey: string | string[]` Uses a property (or several properties) from the 
-    context object to populate hash id for storing throttle records. If not key
+    context object to produce hash id for storing throttle records. If no key
     is provided, the hash id will be generated according to the context itself.
 - `except: (context) => boolean` The throttle rule will not be applied to the 
     matching condition, returns `true` or `false` to indicate skipping or 
@@ -148,13 +154,13 @@ A `ThrottleStorage` must implement these methods:
 
 - `set(id: string, duration: number, cb: (err: Error) => void): void`
     Sets a throttle record in the storage.
-    - `id` A unique hash id populated by throttle function.
+    - `id` A unique hash id produced by throttle function.
     - `duration` The duration in seconds passed to the throttle function.
     - `cb` After the record is stored (or any error occurred), this function 
         will be called. 
 - `test(id: string, cb: (err: Error, pass: boolean) => void): void`
-    Tests if a throttle is available.
-    - `id` A unique hash id populated by throttle function.
+    Tests the throttle via id to see if an operation can be performed.
+    - `id` A unique hash id produced by throttle function.
     - `cb` After test, this function will be called with potential error and 
         `pass` argument indicates test succeed or failed.
 - `gc(cb: () => void): void` Garbage collection implementation. Unlike many 

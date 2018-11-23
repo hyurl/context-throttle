@@ -13,6 +13,12 @@ export interface ThrottleStorage {
     gc(cb: () => void): void;
 }
 
+export class MemoryStore implements ThrottleStorage {
+    set(id: string, duration: number, cb: (err: Error) => void): void;
+    test(id: string, cb: (err: Error, pass: boolean) => void): void;
+    gc(cb: () => void): void;
+}
+
 export interface ThrottleOptions<I> {
     /**
      * The default duration in seconds to lock between two operations, the 
@@ -31,7 +37,8 @@ export interface ThrottleOptions<I> {
     except?: (context: I) => boolean;
     /**
      * Garbage collection interval in seconds, expired throttle records will be 
-     * deleted after timeout.
+     * deleted after timeout. The default value is 15, and you can set `0` to 
+     * disable GC.
      */
     gcInterval?: number;
     /**

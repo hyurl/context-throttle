@@ -14,7 +14,7 @@ export interface ThrottleStorage {
 }
 
 export class CommonStore implements ThrottleStorage {
-    constructor(storage?: any)
+    constructor(protected records?: { [x: string]: [number, number] });
     set(id: string, duration: number, cb: (err: Error) => void): void;
     test(id: string, cb: (err: Error, pass: boolean) => void): void;
     gc(cb: () => void): void;

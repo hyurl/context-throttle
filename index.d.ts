@@ -14,7 +14,8 @@ export interface ThrottleStorage {
 }
 
 export class CommonStore implements ThrottleStorage {
-    constructor(protected records?: { [x: string]: [number, number] });
+    protected records?: { [x: string]: [number, number] };
+    constructor(records?: { [x: string]: [number, number] });
     set(id: string, duration: number, cb: (err: Error) => void): void;
     test(id: string, cb: (err: Error, pass: boolean) => void): void;
     gc(cb: () => void): void;
@@ -31,7 +32,7 @@ export interface ThrottleOptions<I> {
      * produce hash id for storing throttle records. If no key is provided, 
      * the hash id will be generated according to the context itself.
      */
-    useKey?: keyof I | Array<keyof I>;
+    useKey?: keyof I | Array<keyof I> | string[];
     /**
      * The throttle rule will not be applied to the matching condition, returns 
      * `true` or `false` to indicate skipping or testing.
